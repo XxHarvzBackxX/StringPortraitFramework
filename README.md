@@ -35,11 +35,17 @@ Find below a simple example content pack for CP to see how the framework should 
 			"Entries": {
 				"Strings/StringsFromMaps:BusStop.1": {
 					"ImagePath": "Mods/harv.SPF.ExamplePack/image", // game content relative
-					"NPCName": "Bus Stop Sign",
+					"NPCName": "Bus Stop Sign", // what the name of the NPC should show as
 					"ShouldTrimColon": false, // trims the name of an NPC off. e.g: "Dave: Hello there!" would become "Hello there!"
-					"FuzzRatio": 100 // so this is necessary because it checks the value of the string when evaluating.
+					"FuzzRatio": 100.0 // so this is necessary because it checks the value of the string when evaluating.
 							 // if the string you're patching has dynamic tokens that you won't know the value of (i.e. they can change)
 							 // then you should decrease this to maybe around 90 / 95. 100 = exact match.
+				},
+				"Strings/StringsFromMaps:Town.3": { // just another to impact the left-most gravestone in the town as well
+					"ImagePath": "Mods/harv.SPF.ExamplePack/image2",
+					"NPCName": "Some Rat",
+					"ShouldTrimColon": false,
+					"FuzzRatio": 100.0
 				}
 			}
 		},
@@ -52,3 +58,8 @@ Find below a simple example content pack for CP to see how the framework should 
 	]
 }
 ```
+### Example from above
+![Image showing the string in the bus-stop example][bus-stop-pic]
+
+
+[bus-stop-pic]: image.png
