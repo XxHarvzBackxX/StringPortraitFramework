@@ -34,10 +34,12 @@ Find below a simple example content pack for CP to see how the framework should 
 			"Target": "Mods/harv.SPF/Strings",
 			"Entries": {
 				"Strings/StringsFromMaps:BusStop.1": {
-					"ImagePath": "Mods/harv.SPF.ExamplePack/image",
+					"ImagePath": "Mods/harv.SPF.ExamplePack/image", // game content relative
 					"NPCName": "Bus Stop Sign",
-					"ShouldTrimColon": false,
-					"FuzzRatio": 100
+					"ShouldTrimColon": false, // trims the name of an NPC off. e.g: "Dave: Hello there!" would become "Hello there!"
+					"FuzzRatio": 100 // so this is necessary because it checks the value of the string when evaluating.
+							 // if the string you're patching has dynamic tokens that you won't know the value of (i.e. they can change)
+							 // then you should decrease this to maybe around 90 / 95. 100 = exact match.
 				}
 			}
 		},
