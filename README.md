@@ -1,7 +1,7 @@
 # StringPortraitFramework
 ### StringPortraitFramework is a simplistic framework by XxHarvzBackxX (commissioned by DolphinIsNotaFish) that leverages CP statements to allow in-game object dialogues to display portraits alongside their dialogue.
 Find below a simple example content pack for CP to see how the framework should be used:
-```json
+```jsonc
 // manifest.json -- Basic stuff, with dependency on SPF and a CP content pack notice.
 {
 	"Name": "[CP] SPF Example Pack",
@@ -23,7 +23,7 @@ Find below a simple example content pack for CP to see how the framework should 
 }
 ```
 
-```json
+```jsonc
 // CP Content Pack file -- loads a portrait image and writes a new patch to the SPF log
 {
 	"Format": "2.4.0",
