@@ -1,0 +1,16 @@
+{
+	"Name": "StringPortraitFramework",
+	"Author": "XxHarvzBackxX",
+	"Version": "1.0.0",
+	"Description": "StringPortraitFramework mod - allows you to add portraits to object dialogue.",
+	"UniqueID": "harv.SPF",
+	"MinimumApiVersion": "4.1.5",
+	"UpdateKeys": [ "Nexus:???" ],
+	"Dependencies": [
+		{
+			"UniqueID": "Pathoschild.ContentPatcher",
+			"IsRequired": true
+		}
+	],
+	"EntryDll": "StringPortraitFramework.dll"
+}
