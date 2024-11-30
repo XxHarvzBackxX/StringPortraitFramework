@@ -14,11 +14,12 @@ public class Patch
     public string NPCName { get; set; }
     internal Texture2D Image { get; set; }
     public bool ShouldTrimColons { get; set; }
-    public int FuzzRatio { get; set; }
-    public Patch(string imagePath, bool trimColons, int fuzzRatio, IModHelper helper)
+    public float FuzzRatio { get; set; }
+    public Patch(string imagePath, bool trimColons, string npcName)
     {
         ImagePath = imagePath;
         ShouldTrimColons = trimColons;
-        Image = helper.GameContent.Load<Texture2D>(imagePath);
+        NPCName = npcName;
+        Image = ModEntry.Instance!.Helper.GameContent.Load<Texture2D>(imagePath);
     }
 }

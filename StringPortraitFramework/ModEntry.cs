@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 /// <summary>The mod entry point.</summary>
 internal sealed class ModEntry : Mod
 {
+    public static ModEntry? Instance { get; private set; }
     public static Dictionary<string, Patch> PatchDictionary = new Dictionary<string, Patch>();
     public static Dictionary<string, string> StringsFromPatches = new Dictionary<string, string>();
     public static Harmony? HarmonyInstance { get; private set; }
@@ -17,12 +18,13 @@ internal sealed class ModEntry : Mod
     /// <param name="helper">Provides simplified APIs for writing mods.</param>
     public override void Entry(IModHelper helper)
     {
+        Instance = this;
         HarmonyInstance = new Harmony(ModManifest.UniqueID);
 
         helper.Events.Content.AssetRequested += AssetRequested;
-        helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
-        HarmonyInstance.Patch(AccessTools.Method("Game1:drawObjectDialogue", [typeof(string)]), prefix: new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(Prefix_OneString))));
-        HarmonyInstance.Patch(AccessTools.Method("Game1:drawObjectDialogue", [typeof(List<string>)]), prefix: new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(Prefix_StringList))));
+        helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+        HarmonyInstance.Patch(AccessTools.Method("Game1:drawObjectDialogue", new[] { typeof(string)}), prefix: new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(Prefix_OneString))));
+        HarmonyInstance.Patch(AccessTools.Method("Game1:drawObjectDialogue", new[] { typeof(List<string>) } ), prefix: new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(Prefix_StringList))));
     }
 
     public static bool Prefix_OneString(string dialogue)
@@ -49,7 +51,8 @@ internal sealed class ModEntry : Mod
 
     public static void ConstructNewSpeakerDialogue(List<string> dialogue, Texture2D image, string speakerName, string key, bool shouldTrimColons)
     {
-        string newDialogue = ConvertFromObjectToNPCDialogue(string.Join("#", dialogue), shouldTrimColons);
+        string newDialogue;
+        newDialogue = ConvertFromObjectToNPCDialogue(string.Join("#", dialogue), shouldTrimColons);
         var speaker = new NPC(new AnimatedSprite(), Vector2.One * 9999999, "", 0, speakerName, false, image);
         var dialogueInstance = new Dialogue(speaker, key, newDialogue);
         Game1.DrawDialogue(dialogueInstance);
@@ -62,22 +65,37 @@ internal sealed class ModEntry : Mod
     /// <returns></returns>
     public static string ConvertFromObjectToNPCDialogue(string dialogue, bool trim)
     {
-        var list = dialogue.Split('#');
+        if (string.IsNullOrWhiteSpace(dialogue))
+        {
+            throw new ArgumentException("Dialogue string cannot be null or whitespace.", nameof(dialogue));
+        }
+
+        // Split by `#` if present; otherwise, treat the entire string as a single entry.
+        var list = dialogue.Contains("#") ? dialogue.Split('#') : new[] { dialogue };
         string[] newList = new string[list.Length];
+
         for (int i = 0; i < list.Length; i++)
         {
-            if (trim)
-                newList[i] = list[i].Split(':')[1].Trim();
+            // Check if the entry contains a colon before attempting to split.
+            if (trim && list[i].Contains(":"))
+            {
+                newList[i] = list[i].Split(new[] { ':' }, 2)[1].Trim(); // Use max count of 2 to avoid over-splitting.
+            }
+            else
+            {
+                newList[i] = list[i].Trim(); // Keep the text as-is, trimming whitespace.
+            }
         }
-        return string.Join("#$b#", newList);
+
+        return string.Join("#$b#", newList).Replace("^", "#$b#");
     }
 
     /// <summary>
-    /// Populate the patch dictionary when the save is loaded.
+    /// Populate the patch dictionary when the day starts
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void GameLoop_SaveLoaded(object? sender, SaveLoadedEventArgs e)
+    private void GameLoop_DayStarted(object? sender, DayStartedEventArgs e)
     {
         PopulatePatchDictionary();
     }
